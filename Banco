@@ -1,0 +1,297 @@
+class Usuario:
+    def __init__(self, nomUsuario, clave, saldo, saldoOculto, nombre, apellido, edad):
+        self.nomUsuario = nomUsuario
+        self.clave = clave
+        self.saldo = saldo
+        self.saldoOculto = saldoOculto
+        self.nombre = nombre
+        self.apellido = apellido
+        self.edad = edad
+
+
+    def saldo_formato(self):
+        return f"{self.saldo:,.2f}"
+
+
+    def __str__(self):
+        return (f"Usuario: {self.nomUsuario}\n"
+                f"Clave: {self.clave}\n"
+                f"Saldo: {self.saldoOculto}\n"
+                f"Nombre: {self.nombre}\n"
+                f"Apellido: {self.apellido}\n"
+                f"Edad: {self.edad}")
+
+
+def ingresar_a_usuario(usuarios, nomUsuario, clave):
+    for usuario in usuarios:
+        if usuario.nomUsuario == nomUsuario and usuario.clave == clave:
+            return usuario
+    return None
+
+
+def usuario_existe(usuarios, nomUsuario):
+    for usuario in usuarios:
+        if usuario.nomUsuario == nomUsuario:
+            return True
+    return False
+
+
+def crear_usuario():
+    print("-----------------------------------")
+    print("El usuario debe tener una mayúscula")
+    print("Debe tener entre 5 y 15 caracteres")
+    print("No debe contener espacios.")
+    while True:
+        nomUsuario = input("Ingrese el usuario: ").strip()
+       
+        if usuario_existe(usuarios, nomUsuario):
+            print("-----------------------------------")
+            print("El usuario ya existe")
+            print("-----------------------------------")
+            continue
+       
+        espacio = False
+        long = len(nomUsuario)
+        entre = 5 <= long <= 15
+        mayus = False
+        for i in nomUsuario:
+            if i == " ":
+                espacio = True
+            if "A" <= i <= "Z":
+                mayus = True
+
+
+        if entre and not espacio and mayus:
+            print("-----------------------------------")
+            print("El usuario es correcto")
+            break
+        else:
+            print("-----------------------------------")
+            print("El usuario es incorrecto, intente de nuevo.")
+            if not entre:
+                print("No cumple con la cantidad de caracteres")
+                print("Tiene ", long, " caracteres")
+            if espacio:
+                print("No debe contener espacios")
+            if not mayus:
+                print("Debe tener una mayúscula")
+
+
+    print("-----------------------------------")
+    print("La clave debe tener una mayúscula")
+    print("Debe tener entre 5 y 15 caracteres")
+    print("No debe contener espacios")
+    print("Debe tener un número")
+
+
+    while True:
+        clave = input("Ingrese la clave: ").strip()
+       
+        espacio = False
+        long = len(clave)
+        entre = 5 <= long <= 15
+        mayus = False
+        numero = False
+       
+        for i in clave:
+            if i == " ":
+                espacio = True
+            if "A" <= i <= "Z":
+                mayus = True
+            if "0" <= i <= "9":
+                numero = True
+       
+        if entre and not espacio and mayus and numero:
+            print("-----------------------------------")
+            print("La clave es correcta")
+            print("-----------------------------------")
+            break
+        else:
+            print("-----------------------------------")
+            print("La clave es incorrecta, intente de nuevo.")
+            if not entre:
+                print("No cumple con la cantidad de caracteres")
+                print("Tiene ", long, " caracteres")
+            if espacio:
+                print("No debe contener espacios")
+            if not mayus:
+                print("Debe tener una mayúscula")
+            if not numero:
+                print("Debe tener un número")
+
+
+    while True:
+        nombre = input("Ingrese su nombre: ").strip()
+        if nombre == "" or nombre == " ":
+            continue
+        else:
+            while True:
+                apellido = input("Ingrese su apellido: ").strip()
+                if apellido == "" or apellido == " ":
+                    continue
+                else:
+                    while True:
+                        edad = input("Ingrese su edad, debe ser mayor de edad: ").strip()
+                        if edad == "" :
+                            continue
+                        elif edad < "18":
+                            edad = int(edad)
+                            print("-----------------------------------")
+                            print("Debe ser mayor de edad para poder registrarte")
+                            print("-----------------------------------")
+                        else:
+                            print("-----------------------------------")
+                            print("Tienes un saldo inicial de $10,000.00")
+                            saldo = 10000
+                            saldoOculto = "***"
+                            break
+                    break
+
+
+            return Usuario(nomUsuario, clave, saldo, saldoOculto, nombre, apellido, edad)
+
+
+def enviar(usuario_actual, usuarios):
+    while True:
+        print("-----------------------------------")
+        nomUsuario = input("Ingrese el usuario al que quiere enviar dinero: ").strip()
+        if nomUsuario == "":
+            continue
+        else:
+            usuario_encontrado = None
+            for usuario in usuarios:
+                if usuario.nomUsuario == nomUsuario:
+                    usuario_encontrado = usuario
+                    break #salir del for
+
+
+            if usuario_encontrado:
+                while True:
+                    print("-----------------------------------")
+                    monto = input(f"Ingrese el monto que quiere enviar a {usuario_encontrado.nomUsuario}: ").strip()
+                    if monto == "":
+                        continue
+                    else:
+                        try:
+                            monto = float(monto)
+                            if monto <= 0:
+                                print("-----------------------------------")
+                                print("Monto no válido. Intente nuevamente.")
+                                continue
+
+
+                            if monto > usuario_actual.saldo:
+                                print("-----------------------------------")
+                                print("Saldo insuficiente. Intente nuevamente.")
+                            else:
+                                print("-----------------------------------")
+                                print(f"Escriba 'enviar' para enviar ${monto:,.2f} a {usuario_encontrado.nomUsuario}")
+                                print("Escriba 'editar' para editar el monto a enviar")
+                                print("Escriba 'cancelar' para cancelar el envío")
+                                boton_enviar = input("¿Qué desea hacer? ").lower().strip()
+                               
+                                if boton_enviar.lower() == "enviar":
+                                    usuario_actual.saldo -= monto
+                                    usuario_encontrado.saldo += monto
+                                    print("-----------------------------------")
+                                    print(f"Envío realizado con éxito. Su nuevo saldo es {usuario_actual.saldo_formato()}")
+                                    return
+                                elif boton_enviar.lower() == "editar":
+                                    continue
+                                elif boton_enviar.lower() == "cancelar":
+                                    return
+                                else:
+                                    print("-----------------------------------")
+                                    print("Opción no válida. Intente nuevamente.")
+                        except ValueError:
+                            print("-----------------------------------")
+                            print("Monto no válido. Intente nuevamente.")
+            else:
+                print("-----------------------------------")
+                print("El usuario no existe. Inténtelo nuevamente.")
+       
+def ingresar():
+    cont = 3
+    while True:
+        print("-----------------------------------")
+        nomUsuario = input("Ingrese su usuario: ").strip()
+        if nomUsuario == "":
+            continue
+        else:
+            while True:
+                clave = input("Ingrese su clave: ").strip()
+                if clave == "":
+                    continue
+                else:
+                    usuario_encontrado = ingresar_a_usuario(usuarios, nomUsuario, clave)
+       
+                    if usuario_encontrado:
+                        print("-----------------------------------")
+                        print("Inicio de sesión exitoso!")
+                        print(usuario_encontrado)
+                       
+                        while True:
+                            print("-----------------------------------")
+                            print("Escriba 'ver saldo' para ver su saldo disponible")
+                            print("Escriba 'enviar' para enviar dinero")
+                            print("Escriba 'volver' para volver al menu")
+                            boton_ing = input("¿Qué desea hacer? ").lower().strip()
+                           
+                            if boton_ing == "volver":
+                                return
+                           
+                            if boton_ing == "ver saldo":
+                                print("-----------------------------------")
+                                print(f"Saldo disponible: ${usuario_encontrado.saldo_formato()}")
+                           
+                            elif boton_ing == "enviar":
+                                enviar(usuario_encontrado, usuarios)
+                           
+                            else:
+                                print("-----------------------------------")
+                                print("Opción no válida. Intente nuevamente.")
+                    else:
+                        if cont != 0:
+                            print("-----------------------------------")
+                            print("Usuario o clave incorrectos. Intente nuevamente.")
+                            print(f"Te quedan {cont} intentos")
+                            cont -= 1
+                           
+                        else:
+                            print("-----------------------------------")
+                            print("Te quedaste sin intentos, vuelve a intentarlo más tarde")
+                            break
+                        break
+
+
+usuarios = []
+
+
+while True:
+    print("-----------------------------------")
+    print("Escriba 'crear' si desea crear un usuario")
+    print("Escriba 'ingresar' para ingresar a su usuario")
+    print("Escriba 'salir' para salir del programa")
+    print("-----------------------------------")
+    boton = input("¿Qué desea hacer? ").lower().strip()
+   
+    if boton == "salir":
+        break
+
+
+    if boton == "crear":
+        usuario = crear_usuario()
+        usuarios.append(usuario)
+        print("Usuario creado correctamente!")
+
+
+    elif boton == "ingresar":
+        ingresar()
+    else:
+        print("-----------------------------------")
+        print("Opción no válida. Intente nuevamente.")
+           
+print("\nLista de usuarios")
+for usuario in usuarios:
+    print(usuario)
+
